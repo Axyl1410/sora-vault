@@ -1,0 +1,165 @@
+# Testing Guide
+
+This guide covers how to test the Sui Move smart contracts in the `packages/sui-contract` package.
+
+## Quick Start
+
+Run all tests:
+
+```bash
+cd packages/sui-contract/move
+sui move test
+```
+
+## Test Categories
+
+### 1. Subscription Tests
+
+**File:** `tests/subscription_tests.move`
+
+**Test Cases:**
+
+- `test_change_tier_upgrade` - Tests upgrading from Basic to Premium tier with prorated payment calculation
+- `test_change_tier_downgrade` - Tests downgrading from Premium to Basic tier
+- `test_calculate_remaining_value` - Verifies the remaining subscription value calculation logic
+- `test_update_listing_price` - Tests updating subscription price on the Kiosk marketplace
+
+**Run specific test file:**
+
+```bash
+sui move test subscription_tests
+```
+
+### 2. Comment Tests
+
+**File:** `tests/comment_tests.move`
+
+**Test Cases:**
+
+- `test_create_comment` - Creates a comment with a valid subscription
+- `test_reply_to_comment` - Tests nested reply functionality for comment threads
+- `test_update_comment` - Updates comment content
+- `test_delete_comment` - Tests soft delete functionality for comments
+- `test_comment_access_control` - Verifies that subscription access is required (expected to fail)
+- `test_update_comment_unauthorized` - Tests unauthorized update attempts (expected to fail)
+
+**Run specific test file:**
+
+```bash
+sui move test comment_tests
+```
+
+### 3. Article Tests
+
+**File:** `tests/article_tests.move`
+
+**Test Cases:**
+
+- `test_publish_article_with_images` - Publishes an article with image metadata
+- `test_update_article_images` - Updates article images
+
+**Run specific test file:**
+
+```bash
+sui move test article_tests
+```
+
+## Expected Results
+
+All tests should pass with the following output:
+
+```
+Running Move unit tests
+[ PASS    ] private_publishing::subscription_tests::test_change_tier_upgrade
+[ PASS    ] private_publishing::subscription_tests::test_change_tier_downgrade
+[ PASS    ] private_publishing::subscription_tests::test_calculate_remaining_value
+[ PASS    ] private_publishing::subscription_tests::test_update_listing_price
+[ PASS    ] private_publishing::comment_tests::test_create_comment
+[ PASS    ] private_publishing::comment_tests::test_reply_to_comment
+[ PASS    ] private_publishing::comment_tests::test_update_comment
+[ PASS    ] private_publishing::comment_tests::test_delete_comment
+[ PASS    ] private_publishing::comment_tests::test_comment_access_control
+[ PASS    ] private_publishing::comment_tests::test_update_comment_unauthorized
+[ PASS    ] private_publishing::article_tests::test_publish_article_with_images
+[ PASS    ] private_publishing::article_tests::test_update_article_images
+...
+Test result: OK. Total tests: XX; passed: XX; failed: 0
+```
+
+## Code Coverage
+
+Run tests with coverage analysis:
+
+```bash
+sui move test --coverage
+```
+
+This will provide detailed coverage information about which parts of your code are tested.
+
+## Troubleshooting
+
+### If Tests Fail
+
+1. **Clean Build:**
+
+   ```bash
+   rm -rf build/
+   sui move build
+   sui move test
+   ```
+
+2. **Check Sui CLI Version:**
+
+   ```bash
+   sui --version
+   # Should be 1.x.x or higher
+   ```
+
+3. **Update Dependencies:**
+   ```bash
+   rm Move.lock
+   sui move build
+   ```
+
+### Common Errors
+
+**"MISSING_DEPENDENCY"**
+
+- **Solution:** Remove the `[env.testnet]` section from `Move.lock` and rebuild
+
+**"Segmentation fault"**
+
+- **Solution:** Update your Sui CLI to the latest version or try building with a clean state
+
+## Next Steps After Tests Pass
+
+Once all tests pass successfully:
+
+1. **Deploy to Testnet:**
+
+   ```bash
+   sui client publish --gas-budget 500000000
+   ```
+
+2. **Extract Package IDs:**
+
+   - Extract the package ID and treasury ID from the deployment output
+
+3. **Update Frontend Configuration:**
+
+   - Update the `networkConfig.ts` file in your frontend application with the new package IDs
+
+4. **Test Frontend Integration:**
+   - Test the frontend integration with the newly deployed contract functions
+
+## Best Practices
+
+- Run tests before every commit
+- Use specific test file names when debugging individual features
+- Check coverage regularly to ensure comprehensive testing
+- Keep test descriptions clear and descriptive
+- Test both success and failure scenarios
+
+## Related Documentation
+
+- [CLI Testing Scripts](/contracts/cli-testing) - End-to-end testing using Sui CLI scripts
