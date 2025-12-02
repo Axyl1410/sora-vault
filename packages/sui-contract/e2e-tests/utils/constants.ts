@@ -23,9 +23,9 @@ export const MS_PER_SECOND = 1000;
 
 // Subscription tiers (matching Move enum values)
 export enum Tier {
-  Free = 0,
-  Basic = 1,
-  Premium = 2,
+	Free = 0,
+	Basic = 1,
+	Premium = 2,
 }
 
 // Royalty constants
@@ -34,15 +34,15 @@ export const MAX_BPS = 10000; // 100% (10000 basis points)
 
 // Test data
 export const TEST_PUBLICATION = {
-  name: "Test Publication",
-  description: "A test publication for E2E testing",
+	name: "Test Publication",
+	description: "A test publication for E2E testing",
 };
 
 export const TEST_ARTICLE = {
-  title: "Test Article",
-  excerpt: "This is a test article excerpt",
-  walrusBlobId: "test-blob-id-12345",
-  sealKeyId: "test-seal-key-id-67890",
+	title: "Test Article",
+	excerpt: "This is a test article excerpt",
+	walrusBlobId: "test-blob-id-12345",
+	sealKeyId: "test-seal-key-id-67890",
 };
 
 // Gas budget for transactions

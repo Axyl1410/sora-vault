@@ -276,14 +276,61 @@ sui client call \
   --args $MAINNET_PUBLISHER_ID \
   --gas-budget 10000000
 
-# Add royalty rule (10% default)
+# (Recommended) Run the call with --json and save the output so you can extract IDs:
+# sui client call ... --json > transfer_policy_output.json
+```
+
+### 3.1 Getting Transfer Policy IDs
+
+After creating the transfer policy, you need both the **TransferPolicy ID** and **TransferPolicyCap ID**
+to configure royalties or use it from the frontend.
+
+```bash
+# Example: run create_transfer_policy_with_royalty and capture JSON output
+sui client call \
+  --package $MAINNET_PACKAGE_ID \
+  --module marketplace_policies \
+  --function create_transfer_policy_with_royalty \
+  --args $MAINNET_PUBLISHER_ID 1000 0 \
+  --gas-budget 100000000 \
+  --json > transfer_policy_output.json
+
+# Extract TransferPolicy ID (object type contains ::TransferPolicy<...SubscriptionNFT>)
+TRANSFER_POLICY_ID=$(
+  jq -r '
+    .objectChanges[]
+    | select(.type == "created" and (.objectType | contains("::TransferPolicy<") and contains("::subscription::SubscriptionNFT")))
+    | .objectId' transfer_policy_output.json
+)
+
+# Extract TransferPolicyCap ID
+TRANSFER_POLICY_CAP_ID=$(
+  jq -r '
+    .objectChanges[]
+    | select(.type == "created" and (.objectType | contains("::TransferPolicyCap<") and contains("::subscription::SubscriptionNFT")))
+    | .objectId' transfer_policy_output.json
+)
+
+echo "TransferPolicy ID:      $TRANSFER_POLICY_ID"
+echo "TransferPolicyCap ID:   $TRANSFER_POLICY_CAP_ID"
+
+# Optionally, append them to your .env file
+echo "MAINNET_TRANSFER_POLICY_ID=$TRANSFER_POLICY_ID"   >> .env.mainnet
+echo "MAINNET_TRANSFER_POLICY_CAP_ID=$TRANSFER_POLICY_CAP_ID" >> .env.mainnet
+
+# You can now use these IDs when calling add_royalty_rule
+# (for example, in a separate step)
+```
+
+```bash
+# Add royalty rule (10% default) once you have POLICY_ID and CAP_ID
 sui client call \
   --package $MAINNET_PACKAGE_ID \
   --module marketplace_policies \
   --function add_royalty_rule \
   --args \
-    <policy_id> \
-    <policy_cap_id> \
+    $TRANSFER_POLICY_ID \
+    $TRANSFER_POLICY_CAP_ID \
     1000 \
     100000000 \
   --gas-budget 10000000

@@ -31,22 +31,25 @@ public struct PublicationCreated has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `publication_id` | `ID` | Unique publication identifier |
-| `creator` | `address` | Creator's address |
-| `name` | `String` | Publication name |
+| Field            | Type      | Description                   |
+| ---------------- | --------- | ----------------------------- |
+| `publication_id` | `ID`      | Unique publication identifier |
+| `creator`        | `address` | Creator's address             |
+| `name`           | `String`  | Publication name              |
 
 **When Emitted:**
+
 - `publication::create_publication()` succeeds
 
 **Use Cases:**
+
 - Index new publications
 - Display recent publications
 - Track publication count
 - Notify followers
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::publication::PublicationCreated",
@@ -70,22 +73,25 @@ public struct PricingUpdated has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `publication_id` | `ID` | Publication being updated |
-| `basic_price` | `u64` | New basic tier price (MIST) |
-| `premium_price` | `u64` | New premium tier price (MIST) |
+| Field            | Type  | Description                   |
+| ---------------- | ----- | ----------------------------- |
+| `publication_id` | `ID`  | Publication being updated     |
+| `basic_price`    | `u64` | New basic tier price (MIST)   |
+| `premium_price`  | `u64` | New premium tier price (MIST) |
 
 **When Emitted:**
+
 - `publication::update_pricing()` succeeds
 
 **Use Cases:**
+
 - Alert subscribers to price changes
 - Track pricing history
 - Market analysis
 - Subscription renewal notifications
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::publication::PricingUpdated",
@@ -108,20 +114,23 @@ public struct FreeTierToggled has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `publication_id` | `ID` | Publication being updated |
-| `enabled` | `bool` | True if enabled, false if disabled |
+| Field            | Type   | Description                        |
+| ---------------- | ------ | ---------------------------------- |
+| `publication_id` | `ID`   | Publication being updated          |
+| `enabled`        | `bool` | True if enabled, false if disabled |
 
 **When Emitted:**
+
 - `publication::toggle_free_tier()` succeeds
 
 **Use Cases:**
+
 - Alert users to access changes
 - Update subscription options
 - Track publication strategy
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::publication::FreeTierToggled",
@@ -149,23 +158,26 @@ public struct ArticlePublished has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `article_id` | `ID` | Unique article identifier |
-| `publication_id` | `ID` | Parent publication |
-| `title` | `String` | Article title |
-| `tier` | `u8` | Required tier (0=Free, 1=Basic, 2=Premium) |
+| Field            | Type     | Description                                |
+| ---------------- | -------- | ------------------------------------------ |
+| `article_id`     | `ID`     | Unique article identifier                  |
+| `publication_id` | `ID`     | Parent publication                         |
+| `title`          | `String` | Article title                              |
+| `tier`           | `u8`     | Required tier (0=Free, 1=Basic, 2=Premium) |
 
 **When Emitted:**
+
 - `article::publish_article()` succeeds
 
 **Use Cases:**
+
 - Notify subscribers of new content
 - Update article listings
 - Build content feeds
 - Search indexing
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::article::ArticlePublished",
@@ -189,20 +201,23 @@ public struct ArticleUpdated has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `article_id` | `ID` | Article being updated |
-| `title` | `String` | New title |
+| Field        | Type     | Description           |
+| ------------ | -------- | --------------------- |
+| `article_id` | `ID`     | Article being updated |
+| `title`      | `String` | New title             |
 
 **When Emitted:**
+
 - `article::update_article()` succeeds
 
 **Use Cases:**
+
 - Update cached article data
 - Track content changes
 - Re-index search
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::article::ArticleUpdated",
@@ -223,19 +238,22 @@ public struct ArticleArchived has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
+| Field        | Type | Description            |
+| ------------ | ---- | ---------------------- |
 | `article_id` | `ID` | Article being archived |
 
 **When Emitted:**
+
 - `article::archive_article()` succeeds
 
 **Use Cases:**
+
 - Hide from public listings
 - Remove from search indexes
 - Track content lifecycle
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::article::ArticleArchived",
@@ -263,24 +281,27 @@ public struct SubscriptionCreated has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `subscription_id` | `ID` | Unique subscription NFT ID |
-| `publication_id` | `ID` | Publication subscribed to |
-| `subscriber` | `address` | Subscriber's address |
-| `tier` | `u8` | Subscription tier (0=Free, 1=Basic, 2=Premium) |
-| `expires_at` | `u64` | Unix timestamp when expires (seconds) |
+| Field             | Type      | Description                                    |
+| ----------------- | --------- | ---------------------------------------------- |
+| `subscription_id` | `ID`      | Unique subscription NFT ID                     |
+| `publication_id`  | `ID`      | Publication subscribed to                      |
+| `subscriber`      | `address` | Subscriber's address                           |
+| `tier`            | `u8`      | Subscription tier (0=Free, 1=Basic, 2=Premium) |
+| `expires_at`      | `u64`     | Unix timestamp when expires (seconds)          |
 
 **When Emitted:**
+
 - `subscription::subscribe()` succeeds
 
 **Use Cases:**
+
 - Track new subscribers
 - Welcome emails/notifications
 - Analytics dashboards
 - Revenue tracking
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::subscription::SubscriptionCreated",
@@ -305,21 +326,24 @@ public struct SubscriptionRenewed has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `subscription_id` | `ID` | Subscription being renewed |
-| `new_expiry` | `u64` | New expiration timestamp (seconds) |
+| Field             | Type  | Description                        |
+| ----------------- | ----- | ---------------------------------- |
+| `subscription_id` | `ID`  | Subscription being renewed         |
+| `new_expiry`      | `u64` | New expiration timestamp (seconds) |
 
 **When Emitted:**
+
 - `subscription::renew()` succeeds
 
 **Use Cases:**
+
 - Track renewal rate
 - Update expiry caches
 - Renewal notifications
 - Revenue tracking
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::subscription::SubscriptionRenewed",
@@ -346,21 +370,23 @@ public struct SubscriptionTierChanged has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `old_subscription_id` | `ID` | ID of the old subscription (destroyed) |
-| `new_subscription_id` | `ID` | ID of the new subscription |
-| `publication_id` | `ID` | Publication being subscribed to |
-| `subscriber` | `address` | Subscriber's address |
-| `old_tier` | `u8` | Previous tier (0=Free, 1=Basic, 2=Premium) |
-| `new_tier` | `u8` | New tier (0=Free, 1=Basic, 2=Premium) |
-| `new_expires_at` | `u64` | New expiration timestamp (seconds) |
+| Field                 | Type      | Description                                |
+| --------------------- | --------- | ------------------------------------------ |
+| `old_subscription_id` | `ID`      | ID of the old subscription (destroyed)     |
+| `new_subscription_id` | `ID`      | ID of the new subscription                 |
+| `publication_id`      | `ID`      | Publication being subscribed to            |
+| `subscriber`          | `address` | Subscriber's address                       |
+| `old_tier`            | `u8`      | Previous tier (0=Free, 1=Basic, 2=Premium) |
+| `new_tier`            | `u8`      | New tier (0=Free, 1=Basic, 2=Premium)      |
+| `new_expires_at`      | `u64`     | New expiration timestamp (seconds)         |
 
 **When Emitted:**
+
 - `subscription::change_tier()` succeeds
 - `subscription::change_tier_with_kiosk()` succeeds
 
 **Use Cases:**
+
 - Track tier changes
 - Update subscription caches
 - Analytics for upgrade/downgrade patterns
@@ -368,6 +394,7 @@ public struct SubscriptionTierChanged has copy, drop {
 - Revenue tracking (upgrade payments)
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::subscription::SubscriptionTierChanged",
@@ -402,20 +429,22 @@ public struct CommentCreated has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `comment_id` | `ID` | Unique comment identifier |
-| `article_id` | `ID` | Article being commented on |
-| `author` | `address` | Comment author's address |
+| Field               | Type         | Description                                               |
+| ------------------- | ------------ | --------------------------------------------------------- |
+| `comment_id`        | `ID`         | Unique comment identifier                                 |
+| `article_id`        | `ID`         | Article being commented on                                |
+| `author`            | `address`    | Comment author's address                                  |
 | `parent_comment_id` | `Option<ID>` | Parent comment ID if this is a reply (None for top-level) |
-| `content_hash` | `vector<u8>` | Hash of comment content (for event indexing) |
-| `created_at` | `u64` | Creation timestamp (seconds) |
+| `content_hash`      | `vector<u8>` | Hash of comment content (for event indexing)              |
+| `created_at`        | `u64`        | Creation timestamp (seconds)                              |
 
 **When Emitted:**
+
 - `comment::create_comment()` succeeds
 - `comment::reply_to_comment()` succeeds
 
 **Use Cases:**
+
 - Build comment threads
 - Notify article authors
 - Track engagement metrics
@@ -423,6 +452,7 @@ public struct CommentCreated has copy, drop {
 - Display comment counts
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::comment::CommentCreated",
@@ -436,6 +466,7 @@ public struct CommentCreated has copy, drop {
 ```
 
 **Nested Reply Example:**
+
 ```json
 {
   "type": "0xabc::comment::CommentCreated",
@@ -463,23 +494,26 @@ public struct CommentUpdated has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `comment_id` | `ID` | Comment being updated |
-| `author` | `address` | Comment author (for verification) |
-| `new_content_hash` | `vector<u8>` | Hash of new content |
-| `updated_at` | `u64` | Update timestamp (seconds) |
+| Field              | Type         | Description                       |
+| ------------------ | ------------ | --------------------------------- |
+| `comment_id`       | `ID`         | Comment being updated             |
+| `author`           | `address`    | Comment author (for verification) |
+| `new_content_hash` | `vector<u8>` | Hash of new content               |
+| `updated_at`       | `u64`        | Update timestamp (seconds)        |
 
 **When Emitted:**
+
 - `comment::update_comment()` succeeds
 
 **Use Cases:**
+
 - Track comment edits
 - Update cached comment content
 - Audit trail for content changes
 - Display "edited" indicators
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::comment::CommentUpdated",
@@ -504,22 +538,25 @@ public struct CommentDeleted has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `comment_id` | `ID` | Comment being deleted |
-| `author` | `address` | Comment author (for verification) |
-| `deleted_at` | `u64` | Deletion timestamp (seconds) |
+| Field        | Type      | Description                       |
+| ------------ | --------- | --------------------------------- |
+| `comment_id` | `ID`      | Comment being deleted             |
+| `author`     | `address` | Comment author (for verification) |
+| `deleted_at` | `u64`     | Deletion timestamp (seconds)      |
 
 **When Emitted:**
+
 - `comment::delete_comment()` succeeds
 
 **Use Cases:**
+
 - Hide deleted comments from UI
 - Track deletion patterns
 - Maintain comment count accuracy
 - Audit trail for moderation
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::comment::CommentDeleted",
@@ -548,23 +585,26 @@ public struct ReadTokenGenerated has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `token_id` | `ID` | Unique token identifier |
-| `article_id` | `ID` | Article being unlocked |
-| `reader` | `address` | Reader's address |
-| `expires_at` | `u64` | Token expiration timestamp (seconds) |
+| Field        | Type      | Description                          |
+| ------------ | --------- | ------------------------------------ |
+| `token_id`   | `ID`      | Unique token identifier              |
+| `article_id` | `ID`      | Article being unlocked               |
+| `reader`     | `address` | Reader's address                     |
+| `expires_at` | `u64`     | Token expiration timestamp (seconds) |
 
 **When Emitted:**
+
 - `access_control::generate_read_token()` succeeds
 
 **Use Cases:**
+
 - Track pay-per-article purchases
 - Temporary access management
 - Revenue attribution
 - Usage analytics
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::access_control::ReadTokenGenerated",
@@ -592,20 +632,23 @@ public struct StatsCreated has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `stats_id` | `ID` | Unique stats object ID |
+| Field            | Type | Description               |
+| ---------------- | ---- | ------------------------- |
+| `stats_id`       | `ID` | Unique stats object ID    |
 | `publication_id` | `ID` | Publication being tracked |
 
 **When Emitted:**
+
 - `analytics::create_stats()` succeeds
 
 **Use Cases:**
+
 - Track analytics initialization
 - Link stats to publications
 - Setup monitoring
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::analytics::StatsCreated",
@@ -628,22 +671,25 @@ public struct SubscriptionRecorded has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `publication_id` | `ID` | Publication gaining subscriber |
-| `tier` | `u8` | Tier of new subscriber |
-| `total_subscribers` | `u64` | New total subscriber count |
+| Field               | Type  | Description                    |
+| ------------------- | ----- | ------------------------------ |
+| `publication_id`    | `ID`  | Publication gaining subscriber |
+| `tier`              | `u8`  | Tier of new subscriber         |
+| `total_subscribers` | `u64` | New total subscriber count     |
 
 **When Emitted:**
+
 - `analytics::record_subscription()` succeeds
 
 **Use Cases:**
+
 - Growth tracking
 - Milestone notifications
 - Dashboard updates
 - Creator analytics
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::analytics::SubscriptionRecorded",
@@ -667,22 +713,25 @@ public struct RevenueRecorded has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `publication_id` | `ID` | Publication earning revenue |
-| `amount` | `u64` | Amount earned in this transaction (MIST) |
-| `total_revenue` | `u64` | Cumulative total revenue (MIST) |
+| Field            | Type  | Description                              |
+| ---------------- | ----- | ---------------------------------------- |
+| `publication_id` | `ID`  | Publication earning revenue              |
+| `amount`         | `u64` | Amount earned in this transaction (MIST) |
+| `total_revenue`  | `u64` | Cumulative total revenue (MIST)          |
 
 **When Emitted:**
+
 - `analytics::record_revenue()` succeeds
 
 **Use Cases:**
+
 - Financial tracking
 - Tax reporting
 - Revenue analytics
 - Milestone notifications
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::analytics::RevenueRecorded",
@@ -709,20 +758,23 @@ public struct TreasuryCreated has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `treasury_id` | `ID` | Unique treasury object ID |
-| `admin` | `address` | Initial admin address (deployer) |
+| Field         | Type      | Description                      |
+| ------------- | --------- | -------------------------------- |
+| `treasury_id` | `ID`      | Unique treasury object ID        |
+| `admin`       | `address` | Initial admin address (deployer) |
 
 **When Emitted:**
+
 - Module `init()` function during deployment
 
 **Use Cases:**
+
 - Record treasury deployment
 - Track admin changes
 - Setup monitoring
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::treasury::TreasuryCreated",
@@ -745,22 +797,25 @@ public struct SubscriptionFeeCollected has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `amount` | `u64` | Fee amount collected (MIST) |
-| `publication_id` | `ID` | Publication being subscribed to |
-| `subscriber` | `address` | Subscriber address |
+| Field            | Type      | Description                     |
+| ---------------- | --------- | ------------------------------- |
+| `amount`         | `u64`     | Fee amount collected (MIST)     |
+| `publication_id` | `ID`      | Publication being subscribed to |
+| `subscriber`     | `address` | Subscriber address              |
 
 **When Emitted:**
+
 - `treasury::collect_subscription_fee()` succeeds
 
 **Use Cases:**
+
 - Track protocol revenue
 - Monitor fee collection
 - Analytics and reporting
 - Tax compliance
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::treasury::SubscriptionFeeCollected",
@@ -784,22 +839,25 @@ public struct ArticleDepositCollected has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `amount` | `u64` | Deposit amount collected (MIST) |
-| `publication_id` | `ID` | Publication publishing the article |
-| `publisher` | `address` | Publisher address |
+| Field            | Type      | Description                        |
+| ---------------- | --------- | ---------------------------------- |
+| `amount`         | `u64`     | Deposit amount collected (MIST)    |
+| `publication_id` | `ID`      | Publication publishing the article |
+| `publisher`      | `address` | Publisher address                  |
 
 **When Emitted:**
+
 - `treasury::collect_article_deposit()` succeeds
 
 **Use Cases:**
+
 - Track article publishing activity
 - Monitor deposit revenue
 - Publisher analytics
 - Spam prevention metrics
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::treasury::ArticleDepositCollected",
@@ -823,22 +881,25 @@ public struct PayPerArticleFeeCollected has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `amount` | `u64` | Fee amount collected (MIST) |
-| `article_id` | `ID` | Article being purchased |
-| `reader` | `address` | Reader address |
+| Field        | Type      | Description                 |
+| ------------ | --------- | --------------------------- |
+| `amount`     | `u64`     | Fee amount collected (MIST) |
+| `article_id` | `ID`      | Article being purchased     |
+| `reader`     | `address` | Reader address              |
 
 **When Emitted:**
+
 - `treasury::collect_pay_per_article_fee()` succeeds
 
 **Use Cases:**
+
 - Track pay-per-article revenue
 - Monitor non-subscription purchases
 - Reader behavior analytics
 - Alternative monetization tracking
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::treasury::PayPerArticleFeeCollected",
@@ -861,21 +922,24 @@ public struct TreasuryWithdrawal has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `amount` | `u64` | Amount withdrawn (MIST) |
-| `recipient` | `address` | Recipient address |
+| Field       | Type      | Description             |
+| ----------- | --------- | ----------------------- |
+| `amount`    | `u64`     | Amount withdrawn (MIST) |
+| `recipient` | `address` | Recipient address       |
 
 **When Emitted:**
+
 - `treasury::withdraw()` succeeds
 
 **Use Cases:**
+
 - Audit trail for fund movements
 - Financial tracking
 - Admin activity monitoring
 - Transparency reporting
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::treasury::TreasuryWithdrawal",
@@ -897,21 +961,24 @@ public struct FeeRatesUpdated has copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
+| Field                      | Type  | Description                          |
+| -------------------------- | ----- | ------------------------------------ |
 | `new_subscription_fee_bps` | `u64` | New subscription fee in basis points |
-| `new_article_deposit_bps` | `u64` | New article deposit in basis points |
+| `new_article_deposit_bps`  | `u64` | New article deposit in basis points  |
 
 **When Emitted:**
+
 - `treasury::update_fee_rates()` succeeds
 
 **Use Cases:**
+
 - Track fee policy changes
 - Notify stakeholders
 - Historical fee tracking
 - Governance transparency
 
 **Example Event Data:**
+
 ```json
 {
   "type": "0xabc::treasury::FeeRatesUpdated",
@@ -929,25 +996,25 @@ public struct FeeRatesUpdated has copy, drop {
 Using Sui TypeScript SDK:
 
 ```typescript
-import { SuiClient } from '@mysten/sui/client';
+import { SuiClient } from "@mysten/sui/client";
 
-const client = new SuiClient({ url: 'https://fullnode.testnet.sui.io:443' });
+const client = new SuiClient({ url: "https://fullnode.testnet.sui.io:443" });
 
 // Subscribe to all publication events
 const unsubscribe = await client.subscribeEvent({
   filter: {
     MoveEventModule: {
       package: PACKAGE_ID,
-      module: 'publication',
+      module: "publication",
     },
   },
   onMessage: (event) => {
-    console.log('Publication event:', event);
+    console.log("Publication event:", event);
 
     // Parse event type
-    if (event.type.endsWith('::PublicationCreated')) {
+    if (event.type.endsWith("::PublicationCreated")) {
       handlePublicationCreated(event);
-    } else if (event.type.endsWith('::PricingUpdated')) {
+    } else if (event.type.endsWith("::PricingUpdated")) {
       handlePricingUpdated(event);
     }
   },
@@ -985,23 +1052,23 @@ const events = await client.queryEvents({
   query: {
     MoveEventModule: {
       package: PACKAGE_ID,
-      module: 'publication',
+      module: "publication",
     },
   },
   limit: 50,
-  order: 'descending',
+  order: "descending",
 });
 
 // Process events
 for (const event of events.data) {
-  console.log('Event:', event.parsedJson);
+  console.log("Event:", event.parsedJson);
 }
 
 // Paginate through events
 let cursor = events.nextCursor;
 while (cursor) {
   const nextPage = await client.queryEvents({
-    query: { MoveEventModule: { package: PACKAGE_ID, module: 'article' } },
+    query: { MoveEventModule: { package: PACKAGE_ID, module: "article" } },
     cursor,
   });
 
@@ -1055,11 +1122,11 @@ client.subscribeEvent({
   filter: {
     MoveEventModule: {
       package: PACKAGE_ID,
-      module: 'publication',
+      module: "publication",
     },
   },
   onMessage: (event) => {
-    const eventName = event.type.split('::').pop();
+    const eventName = event.type.split("::").pop();
     const handler = handlers[eventName];
 
     if (handler) {
@@ -1077,7 +1144,7 @@ const publicationEvents = await client.queryEvents({
   query: {
     MoveEventType: `${PACKAGE_ID}::publication::PublicationCreated`,
   },
-  order: 'ascending',
+  order: "ascending",
 });
 
 // Count by day
@@ -1149,7 +1216,7 @@ client.subscribeEvent({
     // Check milestones
     if (total_revenue >= 100_000_000_000n) {
       // 100 SUI milestone
-      await sendMilestoneEmail(publication_id, '100 SUI earned!');
+      await sendMilestoneEmail(publication_id, "100 SUI earned!");
     }
   },
 });

@@ -3,6 +3,7 @@
 ## Why Kiosk for Subscriptions?
 
 **Kiosk** is Sui's primitive for building marketplaces with enforceable policies. Perfect for:
+
 - ✅ NFT subscriptions with transfer rules
 - ✅ Automatic royalty payments
 - ✅ Secondary market trading
@@ -262,8 +263,8 @@ module private_publishing::royalty_rule {
 
 ```typescript
 // hooks/useKiosk.ts
-import { useSignAndExecuteTransaction } from '@mysten/dapp-kit';
-import { Transaction } from '@mysten/sui/transactions';
+import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
 
 export function useKiosk() {
   const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
@@ -273,7 +274,7 @@ export function useKiosk() {
 
     // Create new Kiosk
     tx.moveCall({
-      target: '0x2::kiosk::new',
+      target: "0x2::kiosk::new",
       arguments: [],
     });
 
@@ -296,12 +297,12 @@ export function useSubscribe() {
     kioskId: string,
     kioskCapId: string,
     publicationId: string,
-    tier: 'Free' | 'Basic' | 'Premium'
+    tier: "Free" | "Basic" | "Premium"
   ) => {
     const tx = new Transaction();
 
     // Split payment coin
-    const tierPrice = tier === 'Basic' ? 5_000_000_000 : 15_000_000_000;
+    const tierPrice = tier === "Basic" ? 5_000_000_000 : 15_000_000_000;
     const [payment] = tx.splitCoins(tx.gas, [tx.pure.u64(tierPrice)]);
 
     // Subscribe and place in Kiosk
@@ -311,10 +312,10 @@ export function useSubscribe() {
         tx.object(kioskId),
         tx.object(kioskCapId),
         tx.pure.id(publicationId),
-        tx.pure.u8(tier === 'Free' ? 0 : tier === 'Basic' ? 1 : 2),
+        tx.pure.u8(tier === "Free" ? 0 : tier === "Basic" ? 1 : 2),
         payment,
         tx.object(TRANSFER_POLICY_ID),
-        tx.object('0x6'), // Clock
+        tx.object("0x6"), // Clock
       ],
     });
 
@@ -391,11 +392,7 @@ export function usePurchaseSubscription() {
     tx.moveCall({
       target: `${PACKAGE_ID}::royalty_rule::pay_royalty`,
       typeArguments: [`${PACKAGE_ID}::subscription::SubscriptionNFT`],
-      arguments: [
-        tx.object(TRANSFER_POLICY_ID),
-        transferRequest,
-        payment,
-      ],
+      arguments: [tx.object(TRANSFER_POLICY_ID), transferRequest, payment],
     });
 
     await signAndExecute({ transaction: tx });
@@ -420,7 +417,7 @@ export function useCheckAccess(articleId: string) {
     const kiosks = await suiClient.getOwnedObjects({
       owner: account.address,
       filter: {
-        StructType: '0x2::kiosk::Kiosk',
+        StructType: "0x2::kiosk::Kiosk",
       },
     });
 
@@ -455,7 +452,11 @@ interface SubscriptionCardProps {
   onRenew: () => void;
 }
 
-export function SubscriptionCard({ subscription, onList, onRenew }: SubscriptionCardProps) {
+export function SubscriptionCard({
+  subscription,
+  onList,
+  onRenew,
+}: SubscriptionCardProps) {
   const isExpired = subscription.expires_at < Date.now();
   const daysRemaining = Math.floor(
     (subscription.expires_at - Date.now()) / (1000 * 60 * 60 * 24)
@@ -465,9 +466,11 @@ export function SubscriptionCard({ subscription, onList, onRenew }: Subscription
     <div className="border rounded-lg p-4">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-bold">{subscription.publication_name}</h3>
-        <span className={`px-2 py-1 rounded text-sm ${
-          subscription.tier === 'Premium' ? 'bg-purple-100' : 'bg-blue-100'
-        }`}>
+        <span
+          className={`px-2 py-1 rounded text-sm ${
+            subscription.tier === "Premium" ? "bg-purple-100" : "bg-blue-100"
+          }`}
+        >
           {subscription.tier}
         </span>
       </div>
@@ -494,7 +497,7 @@ export function SubscriptionCard({ subscription, onList, onRenew }: Subscription
           onClick={onRenew}
           className="flex-1 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          {isExpired ? 'Resubscribe' : 'Renew'}
+          {isExpired ? "Resubscribe" : "Renew"}
         </button>
       </div>
     </div>
@@ -626,20 +629,20 @@ public fun gift_subscription(
 ## Testing
 
 ```typescript
-describe('Kiosk Integration', () => {
-  it('should create Kiosk and subscribe', async () => {
+describe("Kiosk Integration", () => {
+  it("should create Kiosk and subscribe", async () => {
     // Create Kiosk
     const { kioskId, capId } = await createKiosk();
 
     // Subscribe
-    await subscribe(kioskId, capId, publicationId, 'Basic');
+    await subscribe(kioskId, capId, publicationId, "Basic");
 
     // Verify subscription in Kiosk
     const kiosk = await getKiosk(kioskId);
     expect(kiosk.items).toHaveLength(1);
   });
 
-  it('should list and purchase subscription', async () => {
+  it("should list and purchase subscription", async () => {
     // List
     await listForSale(kioskId, capId, subscriptionId, 3);
 
@@ -651,7 +654,7 @@ describe('Kiosk Integration', () => {
     expect(buyerKiosk.items).toContain(subscriptionId);
   });
 
-  it('should pay royalty on transfer', async () => {
+  it("should pay royalty on transfer", async () => {
     const creatorBalanceBefore = await getBalance(creator);
 
     await purchase(buyerKioskId, sellerKioskId, subscriptionId, 10e9);

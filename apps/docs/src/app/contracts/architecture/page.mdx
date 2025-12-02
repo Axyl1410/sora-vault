@@ -3,6 +3,7 @@
 ## Deployment Information
 
 **Current Deployment:**
+
 - **Network**: Sui Testnet
 - **Package ID**: `0x7a9208857a5aaf48bd3d6832e0326017a34a13cb71f627c5ccf2998616aa1506` (Updated)
 - **Previous Package ID**: `0x93d858ad26012ee80a48d1c07dc811966a6b06b2830c8972b4178df213b9b306` (Old)
@@ -61,9 +62,11 @@ The Private Publishing Platform is built on three core Sui primitives:
 ### 1. Move Modules (On-Chain)
 
 #### `publication.move`
+
 **Purpose**: Manage publication lifecycle
 
 **Key Structures**:
+
 ```move
 public struct Publication has key {
     id: UID,
@@ -83,14 +86,17 @@ public struct PublisherCap has key, store {
 ```
 
 **Functions**:
+
 - `create_publication()` - Initialize new publication
 - `update_pricing()` - Change subscription prices
 - `toggle_free_tier()` - Enable/disable free tier
 
 #### `subscription.move`
+
 **Purpose**: Handle subscription NFTs and Kiosk integration
 
 **Key Structures**:
+
 ```move
 public struct SubscriptionNFT has key, store {
     id: UID,
@@ -109,15 +115,18 @@ public enum Tier has copy, drop, store {
 ```
 
 **Functions**:
+
 - `subscribe()` - Mint new subscription NFT
 - `renew()` - Extend subscription
 - `place_in_kiosk()` - Store subscription in user's Kiosk
 - `list_for_sale()` - List subscription on marketplace
 
 #### `article.move`
+
 **Purpose**: Manage encrypted articles
 
 **Key Structures**:
+
 ```move
 public struct Article has key {
     id: UID,
@@ -132,14 +141,17 @@ public struct Article has key {
 ```
 
 **Functions**:
+
 - `publish_article()` - Create new article
 - `update_article()` - Modify article metadata
 - `archive_article()` - Hide from listings
 
 #### `access_control.move`
+
 **Purpose**: Verify reader permissions
 
 **Key Structures**:
+
 ```move
 public struct ReadToken has key {
     id: UID,
@@ -151,15 +163,18 @@ public struct ReadToken has key {
 ```
 
 **Functions**:
+
 - `verify_subscription()` - Check if user has valid subscription
 - `check_tier_access()` - Verify tier matches article requirement
 - `generate_read_token()` - Issue temporary access token
 - `is_token_valid()` - Validate read token
 
 #### `seal_policy.move`
+
 **Purpose**: Seal key server access control policies
 
 **Key Functions**:
+
 ```move
 entry fun seal_approve_subscription(
     id: vector<u8>,           // Seal encryption ID
@@ -177,6 +192,7 @@ entry fun seal_approve_read_token(
 ```
 
 **Implementation Details**:
+
 - Called by Seal key servers during decryption
 - Validates the Seal encryption ID matches `article.seal_key_id`
 - **Important**: Compares against `seal_key_id` field, NOT the Article object ID
@@ -184,9 +200,11 @@ entry fun seal_approve_read_token(
 - Integrates with `access_control` module for subscription/token validation
 
 #### `marketplace_policies.move`
+
 **Purpose**: Transfer policies for subscription trading
 
 **Key Structures**:
+
 ```move
 public struct SubscriptionPolicy has key {
     id: UID,
@@ -198,14 +216,17 @@ public struct SubscriptionPolicy has key {
 ```
 
 **Functions**:
+
 - `create_policy()` - Set up transfer rules
 - `enforce_royalty()` - Take royalty cut on transfers
 - `update_royalty()` - Adjust royalty percentage
 
 #### `analytics.move`
+
 **Purpose**: Private metrics for creators
 
 **Key Structures**:
+
 ```move
 public struct PublicationStats has key {
     id: UID,
@@ -223,6 +244,7 @@ public struct SubscriberCounts has store {
 ```
 
 **Functions** (creator-only):
+
 - `get_stats()` - Retrieve analytics
 - `record_subscription()` - Update counts
 - `record_view()` - Increment view counter
@@ -261,12 +283,14 @@ App
 #### Key Providers
 
 **SessionKeyProvider**
+
 - Manages Seal session keys
 - 30-minute TTL
 - Auto-refresh on expiry
 - Persists to localStorage
 
 **PublishingClientProvider**
+
 - Combines Seal + Walrus + Sui clients
 - Provides unified publishing API
 - Handles encryption/decryption
@@ -274,44 +298,29 @@ App
 #### Custom Hooks
 
 **usePublication**
+
 ```typescript
-const {
-  publications,
-  create,
-  update,
-  publish,
-  isLoading,
-} = usePublication();
+const { publications, create, update, publish, isLoading } = usePublication();
 ```
 
 **useSubscription**
+
 ```typescript
-const {
-  subscribe,
-  renew,
-  listForSale,
-  mySubscriptions,
-  checkAccess,
-} = useSubscription();
+const { subscribe, renew, listForSale, mySubscriptions, checkAccess } =
+  useSubscription();
 ```
 
 **useEncryptedArticle**
+
 ```typescript
-const {
-  article,
-  decrypt,
-  isDecrypting,
-  error,
-} = useEncryptedArticle(articleId);
+const { article, decrypt, isDecrypting, error } =
+  useEncryptedArticle(articleId);
 ```
 
 **useWalrus**
+
 ```typescript
-const {
-  upload,
-  download,
-  isUploading,
-} = useWalrus();
+const { upload, download, isUploading } = useWalrus();
 ```
 
 ### 3. Data Flow
@@ -389,12 +398,14 @@ const {
 ### Privacy Guarantees
 
 **For Readers**:
+
 - zkLogin allows anonymous wallet creation
 - Subscription doesn't reveal real identity
 - Reading activity not tracked on-chain
 - Payment source hidden via coin splitting
 
 **For Writers**:
+
 - Subscriber counts encrypted
 - Revenue private (only creator sees)
 - No public metrics dashboard
@@ -402,12 +413,14 @@ const {
 ### Encryption
 
 **Content Encryption**:
+
 - AES-256-GCM via Seal
 - Unique key per article
 - Key stored encrypted on-chain
 - Decryption requires valid session key
 
 **Session Keys**:
+
 - 30-minute TTL
 - Derived from wallet signature
 - Stored in browser localStorage
@@ -418,12 +431,14 @@ const {
 ### On-Chain Optimization
 
 **Shared vs Owned Objects**:
+
 - `Publication` - Shared (multiple writers possible)
 - `Article` - Owned by publication
 - `SubscriptionNFT` - Owned by subscriber
 - `PublicationStats` - Shared (frequent updates)
 
 **Gas Efficiency**:
+
 - Batch article publishing
 - Lazy subscription renewal
 - Minimal on-chain storage
@@ -431,12 +446,14 @@ const {
 ### Off-Chain Storage
 
 **Walrus Benefits**:
+
 - Decentralized blob storage
 - No single point of failure
 - Cost-effective for large content
 - Built-in redundancy
 
 **Content Strategy**:
+
 - Only metadata on-chain
 - Full articles on Walrus
 - Images/media on Walrus
@@ -447,12 +464,14 @@ const {
 ### Smart Contract Upgrades
 
 **Planned Enhancements**:
+
 1. Add comments (encrypted)
 2. Add reactions/likes
 3. Add article series support
 4. Add subscriber chat
 
 **Migration Strategy**:
+
 - Use upgrade capabilities
 - Maintain backward compatibility
 - Gradual feature rollout
@@ -460,6 +479,7 @@ const {
 ### Frontend Upgrades
 
 **Progressive Enhancement**:
+
 1. Start with basic read/write
 2. Add rich markdown features
 3. Add collaborative editing
@@ -472,12 +492,14 @@ const {
 The following features have been tested end-to-end on Sui Testnet with production data:
 
 1. **Article Encryption & Publishing**
+
    - ✅ Client-side encryption with Seal Protocol
    - ✅ Walrus blob upload with quilt container
    - ✅ On-chain article creation with metadata
    - ✅ Seal encryption ID storage in `seal_key_id` field
 
 2. **Content Retrieval & Decryption**
+
    - ✅ Walrus blob fetching via HTTP aggregator
    - ✅ Quilt container parsing and file extraction
    - ✅ Seal key server access control validation
@@ -495,11 +517,13 @@ The following features have been tested end-to-end on Sui Testnet with productio
 **Problem**: Encrypted data was wrapped in a Walrus "quilt" container during upload, but retrieval attempted to parse raw bytes directly, causing decryption failure.
 
 **Root Cause**:
+
 - `writeFilesFlow()` automatically encodes files in a quilt format with metadata
 - HTTP aggregator returns the quilt container, not the raw file
 - Direct bytes parsing failed because quilt header was included
 
 **Solution**:
+
 ```typescript
 // Before: Direct bytes extraction (BROKEN)
 const encryptedData = await blob.arrayBuffer();
@@ -511,6 +535,7 @@ const encryptedData = await files[0].bytes();
 ```
 
 **Files Changed**:
+
 - `private-publishing-dapp/src/services/walrus.ts`
 - Added quilt parsing logic to `fetchFromWalrus()`
 
@@ -523,12 +548,14 @@ const encryptedData = await files[0].bytes();
 **Problem**: Key servers returned 403 Forbidden during decryption despite valid subscriptions.
 
 **Root Cause**:
-- Seal encryption happens *before* Article object creation, using a random hex ID
+
+- Seal encryption happens _before_ Article object creation, using a random hex ID
 - Article object gets a different ID assigned by Sui when created on-chain
 - `seal_policy.move` compared Seal encryption ID against Article's object ID (wrong)
 - IDs never matched, causing all decryption attempts to fail
 
 **Solution**:
+
 ```move
 // Before: Compared against article object ID (BROKEN)
 let article_id = article::id(article);
@@ -541,6 +568,7 @@ assert!(id == seal_key_id, EAccessDenied);
 ```
 
 **Files Changed**:
+
 - `move/sources/seal_policy.move` (seal_approve_subscription + seal_approve_read_token)
 - Removed unused `sui::bcs` import
 
@@ -558,20 +586,24 @@ assert!(id == seal_key_id, EAccessDenied);
 ### Troubleshooting Guide
 
 **Issue**: "Encrypted object contains no key server metadata"
+
 - **Cause**: Parsing quilt wrapper as raw Seal bytes
 - **Fix**: Use `WalrusBlob.files()` to extract unwrapped file
 - **Reference**: `docs/WALRUS_QUILT_FIX.md`
 
 **Issue**: "NoAccessError: User does not have access" (403)
+
 - **Cause**: Seal policy comparing wrong IDs
 - **Fix**: Ensure `seal_policy` uses `article::seal_key_id()`
 - **Reference**: `docs/SEAL_ACCESS_CONTROL_403.md`
 
 **Issue**: Session key expired
+
 - **Cause**: 30-minute TTL on Seal sessions
 - **Fix**: Call `initializeSession()` to refresh, happens automatically in provider
 
 **Issue**: Walrus blob not found
+
 - **Cause**: Epoch expired or network latency
 - **Fix**: Implement retry with exponential backoff, check epoch status
 
@@ -602,12 +634,14 @@ assert!(id == seal_key_id, EAccessDenied);
 ### Metrics to Track
 
 **On-Chain**:
+
 - Total publications
 - Active subscriptions
 - Transaction volume
 - Gas consumption
 
 **Off-Chain**:
+
 - Walrus storage usage
 - Encryption/decryption times
 - Session key refresh rate
@@ -616,6 +650,7 @@ assert!(id == seal_key_id, EAccessDenied);
 ### Support & Debugging
 
 **Common Issues**:
+
 - Session key expiry → Refresh
 - Walrus download fail → Retry with backoff
 - Decryption fail → Verify subscription
@@ -624,6 +659,7 @@ assert!(id == seal_key_id, EAccessDenied);
 ---
 
 **This architecture prioritizes**:
+
 - ✅ Privacy by default (Seal + zkLogin)
 - ✅ Decentralization (Walrus)
 - ✅ User ownership (Kiosk + NFTs)

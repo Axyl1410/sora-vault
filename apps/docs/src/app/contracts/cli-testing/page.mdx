@@ -5,6 +5,7 @@ Comprehensive CLI-based test scripts for testing the Private Publishing Platform
 ## Overview
 
 These scripts provide end-to-end testing of all modules using the Sui CLI:
+
 - **Publication**: Create and manage publications
 - **Subscription**: Free/Basic/Premium tier subscriptions
 - **Article**: Publish, update, and archive content
@@ -14,12 +15,15 @@ These scripts provide end-to-end testing of all modules using the Sui CLI:
 ## Prerequisites
 
 1. **Sui CLI installed**
+
    ```bash
    sui --version
    ```
+
    If not installed, see: https://docs.sui.io/guides/developer/getting-started/sui-install
 
 2. **`jq` installed** (for JSON parsing)
+
    ```bash
    # macOS
    brew install jq
@@ -68,12 +72,14 @@ chmod +x scripts/*.sh  # Make scripts executable
 **Purpose**: Start a local Sui network for testing
 
 **What it does**:
+
 - Checks for Sui CLI installation
 - Creates/switches to local environment
 - Starts network with faucet enabled
 - Uses force-regenesis for clean state
 
 **Usage**:
+
 ```bash
 ./scripts/00_setup_local_network.sh
 ```
@@ -87,12 +93,14 @@ chmod +x scripts/*.sh  # Make scripts executable
 **Purpose**: Deploy the private_publishing package
 
 **What it does**:
+
 - Requests test SUI from faucet
 - Builds the Move package
 - Publishes to local network
 - Saves Package ID and Publisher ID to `.env.local`
 
 **Usage**:
+
 ```bash
 ./scripts/01_deploy.sh
 ```
@@ -106,6 +114,7 @@ chmod +x scripts/*.sh  # Make scripts executable
 **Purpose**: Test publication creation and management
 
 **Tests**:
+
 1. ✅ Create publication with pricing and free tier
 2. ✅ View publication details
 3. ✅ Update pricing (10 SUI basic, 20 SUI premium)
@@ -113,6 +122,7 @@ chmod +x scripts/*.sh  # Make scripts executable
 5. ✅ Verify ownership via PublisherCap
 
 **Usage**:
+
 ```bash
 ./scripts/02_test_publication.sh
 ```
@@ -126,6 +136,7 @@ chmod +x scripts/*.sh  # Make scripts executable
 **Purpose**: Test subscription NFTs across all tiers
 
 **Tests**:
+
 1. ✅ Subscribe with Free tier (0 SUI)
 2. ✅ Subscribe with Basic tier (5 SUI)
 3. ✅ Subscribe with Premium tier (15 SUI)
@@ -133,6 +144,7 @@ chmod +x scripts/*.sh  # Make scripts executable
 5. ✅ View subscription details (tier, expiry, subscriber)
 
 **Usage**:
+
 ```bash
 ./scripts/03_test_subscription.sh
 ```
@@ -146,6 +158,7 @@ chmod +x scripts/*.sh  # Make scripts executable
 **Purpose**: Test article publishing and management
 
 **Tests**:
+
 1. ✅ Publish Free tier article
 2. ✅ Publish Basic tier article
 3. ✅ Publish Premium tier article
@@ -154,6 +167,7 @@ chmod +x scripts/*.sh  # Make scripts executable
 6. ✅ Verify article count increments
 
 **Usage**:
+
 ```bash
 ./scripts/04_test_article.sh
 ```
@@ -167,6 +181,7 @@ chmod +x scripts/*.sh  # Make scripts executable
 **Purpose**: Test analytics tracking and reporting
 
 **Tests**:
+
 1. ✅ Create PublicationStats
 2. ✅ Record subscriptions by tier (1 Free, 3 Basic, 2 Premium)
 3. ✅ Record revenue (15 SUI basic + 30 SUI premium = 45 SUI total)
@@ -174,11 +189,13 @@ chmod +x scripts/*.sh  # Make scripts executable
 5. ✅ View comprehensive analytics dashboard
 
 **Usage**:
+
 ```bash
 ./scripts/05_test_analytics.sh
 ```
 
 **Output**:
+
 - PublicationStats ID
 - Subscriber counts by tier
 - Total revenue
@@ -191,12 +208,14 @@ chmod +x scripts/*.sh  # Make scripts executable
 **Purpose**: Test access verification and read tokens
 
 **Tests**:
+
 1. ✅ Generate read token for Basic article (~0.167 SUI daily rate)
 2. ✅ Generate read token for Free article (0 SUI)
 3. ✅ Verify token validity (24-hour expiry)
 4. ✅ Verify subscription-based access (tier hierarchy)
 
 **Usage**:
+
 ```bash
 ./scripts/06_test_access_control.sh
 ```
@@ -210,12 +229,14 @@ chmod +x scripts/*.sh  # Make scripts executable
 **Purpose**: Master script to run all tests in sequence
 
 **What it does**:
+
 - Checks local network connectivity
 - Runs all 6 test scripts automatically
 - Displays comprehensive results summary
 - Reports total test duration
 
 **Usage**:
+
 ```bash
 ./scripts/run_all_tests.sh
 ```
@@ -254,6 +275,7 @@ READ_TOKEN_ID=0x...
 ```
 
 You can source this file in other scripts:
+
 ```bash
 source .env.local
 echo $PACKAGE_ID
@@ -296,6 +318,7 @@ sui client events --module publication
 ### Issue: "Error: Sui client not configured"
 
 **Solution**: The local network isn't running
+
 ```bash
 # Terminal 1
 ./scripts/00_setup_local_network.sh
@@ -304,6 +327,7 @@ sui client events --module publication
 ### Issue: "Error: .env.local not found"
 
 **Solution**: Run deployment first
+
 ```bash
 ./scripts/01_deploy.sh
 ```
@@ -311,6 +335,7 @@ sui client events --module publication
 ### Issue: "Error: Insufficient funds"
 
 **Solution**: Request more test SUI
+
 ```bash
 sui client faucet
 sui client gas  # Check balance
@@ -319,6 +344,7 @@ sui client gas  # Check balance
 ### Issue: "jq: command not found"
 
 **Solution**: Install jq
+
 ```bash
 # macOS
 brew install jq
@@ -330,6 +356,7 @@ sudo apt-get install jq
 ### Issue: Network not accessible
 
 **Solution**: Verify local network is running
+
 ```bash
 curl http://127.0.0.1:9000
 # Should return network info
@@ -337,14 +364,14 @@ curl http://127.0.0.1:9000
 
 ## Test Coverage
 
-| Module | Functions Tested | Coverage |
-|--------|------------------|----------|
-| Publication | 4/4 | 100% |
-| Subscription | 4/6 | 67% (no Kiosk tests) |
-| Article | 4/4 | 100% |
-| Analytics | 4/4 | 100% |
-| Access Control | 2/4 | 50% (verification is off-chain) |
-| Marketplace Policies | 0/6 | 0% (requires TransferPolicy setup) |
+| Module               | Functions Tested | Coverage                           |
+| -------------------- | ---------------- | ---------------------------------- |
+| Publication          | 4/4              | 100%                               |
+| Subscription         | 4/6              | 67% (no Kiosk tests)               |
+| Article              | 4/4              | 100%                               |
+| Analytics            | 4/4              | 100%                               |
+| Access Control       | 2/4              | 50% (verification is off-chain)    |
+| Marketplace Policies | 0/6              | 0% (requires TransferPolicy setup) |
 
 **Total**: 18/26 functions tested via CLI (69%)
 
@@ -399,4 +426,3 @@ sui client call \
 - [Local Network Guide](https://docs.sui.io/guides/developer/sui-101/local-network)
 - [Move on Sui](https://docs.sui.io/guides/developer/sui-101/move-overview)
 - [Unit Testing Guide](/contracts/testing) - Learn about Move unit tests
-

@@ -2,6 +2,8 @@ import { Banner, Head } from "nextra/components";
 import { getPageMap } from "nextra/page-map";
 import { Footer, Layout, Navbar } from "nextra-theme-docs";
 import "nextra-theme-docs/style.css";
+import Image from "next/image";
+import { useThemeConfig } from "nextra-theme-docs";
 
 export const metadata = {
 	// Define your metadata here
@@ -11,7 +13,9 @@ export const metadata = {
 // const banner = <Banner storageKey="some-key">Axyl docs are live 🎉</Banner>;
 const navbar = (
 	<Navbar
-		logo={<b>Sora Vault</b>}
+		logo={
+			<Image src="/blacktext.svg" alt="Sora Vault" width={100} height={100} />
+		}
 		// ... Your additional navbar options
 	/>
 );

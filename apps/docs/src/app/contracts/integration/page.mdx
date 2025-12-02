@@ -27,23 +27,23 @@ npm install @mysten/sui @mysten/dapp-kit
 ### Configure Sui Client
 
 ```typescript
-import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
-import { TransactionBlock } from '@mysten/sui/transactions';
+import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
+import { TransactionBlock } from "@mysten/sui/transactions";
 
 // Initialize client
 const client = new SuiClient({
-  url: getFullnodeUrl('testnet'), // or 'mainnet', 'localnet'
+  url: getFullnodeUrl("testnet"), // or 'mainnet', 'localnet'
 });
 
 // Package configuration
 const PACKAGE_ID = process.env.VITE_PACKAGE_ID!;
-const CLOCK_ID = '0x6'; // Shared clock object
+const CLOCK_ID = "0x6"; // Shared clock object
 ```
 
 ### React Integration
 
 ```typescript
-import { useSignAndExecuteTransaction, useSuiClient } from '@mysten/dapp-kit';
+import { useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 
 function MyComponent() {
   const client = useSuiClient();
@@ -86,17 +86,17 @@ async function executeTransaction(txb: TransactionBlock) {
       },
       {
         onSuccess: (result) => {
-          console.log('Success:', result.digest);
+          console.log("Success:", result.digest);
         },
         onError: (error) => {
-          console.error('Error:', error);
+          console.error("Error:", error);
         },
       }
     );
 
     return result;
   } catch (error) {
-    console.error('Transaction failed:', error);
+    console.error("Transaction failed:", error);
     throw error;
   }
 }
@@ -166,15 +166,18 @@ async function createPublication(params: CreatePublicationParams) {
 
   // Transfer objects to sender
   const sender = await client.getActiveAddress();
-  txb.transferObjects([publication, publisherCap, stats], txb.pure.address(sender));
+  txb.transferObjects(
+    [publication, publisherCap, stats],
+    txb.pure.address(sender)
+  );
 
   return executeTransaction(txb);
 }
 
 // Usage
 const result = await createPublication({
-  name: 'Tech Weekly',
-  description: 'Weekly tech insights',
+  name: "Tech Weekly",
+  description: "Weekly tech insights",
   basicPrice: 5_000_000_000n, // 5 SUI
   premiumPrice: 15_000_000_000n, // 15 SUI
   freeTierEnabled: true,
@@ -251,8 +254,8 @@ async function getPublication(publicationId: string): Promise<Publication> {
     options: { showContent: true },
   });
 
-  if (object.data?.content?.dataType !== 'moveObject') {
-    throw new Error('Invalid publication object');
+  if (object.data?.content?.dataType !== "moveObject") {
+    throw new Error("Invalid publication object");
   }
 
   const fields = object.data.content.fields as any;
@@ -318,7 +321,10 @@ async function subscribe(params: SubscribeParams) {
     if (params.tier !== Tier.Free) {
       txb.moveCall({
         target: `${PACKAGE_ID}::analytics::record_revenue`,
-        arguments: [txb.object(params.statsId), txb.pure.u64(params.paymentAmount)],
+        arguments: [
+          txb.object(params.statsId),
+          txb.pure.u64(params.paymentAmount),
+        ],
       });
     }
   }
@@ -332,10 +338,10 @@ async function subscribe(params: SubscribeParams) {
 
 // Usage - Subscribe to Basic tier
 await subscribe({
-  publicationId: '0x...',
+  publicationId: "0x...",
   tier: Tier.Basic,
   paymentAmount: 5_000_000_000n, // 5 SUI
-  statsId: '0x...', // Optional
+  statsId: "0x...", // Optional
 });
 ```
 
@@ -409,9 +415,9 @@ async function changeTier(params: ChangeTierParams) {
 
 // Usage - Upgrade from Basic to Premium
 await changeTier({
-  oldSubscriptionId: '0x...',
-  publicationId: '0x...',
-  treasuryId: '0x...',
+  oldSubscriptionId: "0x...",
+  publicationId: "0x...",
+  treasuryId: "0x...",
   newTier: Tier.Premium,
   paymentAmount: 12_500_000_000n, // Calculated: 15 SUI - 2.5 SUI remaining
 });
@@ -550,7 +556,7 @@ async function getUserSubscriptions(userAddress: string) {
   });
 
   return objects.data.map((obj) => {
-    if (obj.data?.content?.dataType !== 'moveObject') return null;
+    if (obj.data?.content?.dataType !== "moveObject") return null;
 
     const fields = obj.data.content.fields as any;
     return {
@@ -691,7 +697,7 @@ async function updateArticle(params: UpdateArticleParams) {
   // Prepare image metadata JSON
   const imageMetadataJson = params.imageMetadata
     ? JSON.stringify({ images: params.imageMetadata })
-    : '{}';
+    : "{}";
 
   txb.moveCall({
     target: `${PACKAGE_ID}::article::update_article`,
@@ -826,10 +832,7 @@ async function replyToComment(params: ReplyToCommentParams) {
 ### Update Comment
 
 ```typescript
-async function updateComment(
-  commentId: string,
-  newContent: string
-) {
+async function updateComment(commentId: string, newContent: string) {
   const txb = new TransactionBlock();
 
   txb.moveCall({
@@ -853,10 +856,7 @@ async function deleteComment(commentId: string) {
 
   txb.moveCall({
     target: `${PACKAGE_ID}::comment::delete_comment`,
-    arguments: [
-      txb.object(commentId),
-      txb.object(CLOCK_ID),
-    ],
+    arguments: [txb.object(commentId), txb.object(CLOCK_ID)],
   });
 
   return executeTransaction(txb);
@@ -897,7 +897,7 @@ async function getArticleComments(articleId: string): Promise<Comment[]> {
   });
 
   return comments
-    .filter((obj) => obj.data?.content?.dataType === 'moveObject')
+    .filter((obj) => obj.data?.content?.dataType === "moveObject")
     .map((obj) => {
       const fields = (obj.data?.content as any).fields;
       return {
@@ -960,7 +960,11 @@ async function verifyAccess(
 
   txb.moveCall({
     target: `${PACKAGE_ID}::access_control::verify_subscription_access`,
-    arguments: [txb.object(subscriptionId), txb.object(articleId), txb.object(CLOCK_ID)],
+    arguments: [
+      txb.object(subscriptionId),
+      txb.object(articleId),
+      txb.object(CLOCK_ID),
+    ],
   });
 
   const simulation = await client.devInspectTransactionBlock({
@@ -1109,8 +1113,8 @@ The treasury module manages protocol fees and deposits. All treasury operations 
 // - TreasuryCap (owned by deployer)
 
 // After deployment, save these IDs
-const TREASURY_ID = '0x...'; // From deployment output
-const TREASURY_CAP_ID = '0x...'; // From deployment output
+const TREASURY_ID = "0x..."; // From deployment output
+const TREASURY_CAP_ID = "0x..."; // From deployment output
 ```
 
 ### Subscribe with Treasury Fee
@@ -1127,7 +1131,9 @@ async function subscribeWithTreasuryFee(params: SubscribeWithFeeParams) {
   const txb = new TransactionBlock();
 
   // Split coins for payment
-  let [paymentCoin] = txb.splitCoins(txb.gas, [txb.pure.u64(params.paymentAmount)]);
+  let [paymentCoin] = txb.splitCoins(txb.gas, [
+    txb.pure.u64(params.paymentAmount),
+  ]);
 
   // Collect treasury fee (1% default)
   // Returns remaining amount after fee deduction
@@ -1161,7 +1167,7 @@ async function subscribeWithTreasuryFee(params: SubscribeWithFeeParams) {
 
 // Usage
 await subscribeWithTreasuryFee({
-  publicationId: '0x...',
+  publicationId: "0x...",
   treasuryId: TREASURY_ID,
   tier: Tier.Basic,
   paymentAmount: 5_000_000_000n, // 5 SUI
@@ -1292,8 +1298,8 @@ async function getTreasuryBalance(treasuryId: string): Promise<bigint> {
     options: { showContent: true },
   });
 
-  if (object.data?.content?.dataType !== 'moveObject') {
-    throw new Error('Invalid treasury object');
+  if (object.data?.content?.dataType !== "moveObject") {
+    throw new Error("Invalid treasury object");
   }
 
   const fields = object.data.content.fields as any;
@@ -1306,8 +1312,8 @@ async function getTreasuryStats(treasuryId: string) {
     options: { showContent: true },
   });
 
-  if (object.data?.content?.dataType !== 'moveObject') {
-    throw new Error('Invalid treasury object');
+  if (object.data?.content?.dataType !== "moveObject") {
+    throw new Error("Invalid treasury object");
   }
 
   const fields = object.data.content.fields as any;
@@ -1343,14 +1349,17 @@ async function calculateArticleDeposit(
 
   // Parse u64 result
   const resultData = simulation.results?.[0]?.returnValues?.[0];
-  if (!resultData) throw new Error('Failed to calculate deposit');
+  if (!resultData) throw new Error("Failed to calculate deposit");
 
   return BigInt(resultData[0]);
 }
 
 // Usage
 const premiumPrice = 15_000_000_000n; // 15 SUI
-const depositRequired = await calculateArticleDeposit(TREASURY_ID, premiumPrice);
+const depositRequired = await calculateArticleDeposit(
+  TREASURY_ID,
+  premiumPrice
+);
 console.log(`Deposit required: ${depositRequired} MIST`); // 150,000,000 MIST (0.15 SUI)
 ```
 
@@ -1390,7 +1399,7 @@ async function updateFeeRates(
 
   // Validate: max 10% (1000 BPS)
   if (newSubscriptionFeeBps > 1000 || newArticleDepositBps > 1000) {
-    throw new Error('Fee rates cannot exceed 10% (1000 BPS)');
+    throw new Error("Fee rates cannot exceed 10% (1000 BPS)");
   }
 
   txb.moveCall({
@@ -1429,7 +1438,7 @@ const articleDeposit = calculateFee(15_000_000_000n, 100); // 150,000,000 MIST (
 
 // Display to user
 function formatSUI(mist: bigint): string {
-  return (Number(mist) / 1_000_000_000).toFixed(2) + ' SUI';
+  return (Number(mist) / 1_000_000_000).toFixed(2) + " SUI";
 }
 
 console.log(`Fee: ${formatSUI(subscriptionFee)}`); // "Fee: 0.05 SUI"
@@ -1537,9 +1546,9 @@ async function createPublicationWithContent(
         publication,
         publisherCap,
         txb.pure.string(article.title),
-        txb.pure.string(''),
-        txb.pure.string('blob_id'),
-        txb.pure.vector('u8', []),
+        txb.pure.string(""),
+        txb.pure.string("blob_id"),
+        txb.pure.vector("u8", []),
         txb.pure.u8(article.tier),
         txb.pure.u64(Date.now() / 1000),
       ],
@@ -1550,7 +1559,10 @@ async function createPublicationWithContent(
 
   // 4. Transfer objects
   const sender = await client.getActiveAddress();
-  txb.transferObjects([publication, publisherCap, stats], txb.pure.address(sender));
+  txb.transferObjects(
+    [publication, publisherCap, stats],
+    txb.pure.address(sender)
+  );
 
   return executeTransaction(txb);
 }
@@ -1565,7 +1577,7 @@ client.subscribeEvent({
     MoveEventType: `${PACKAGE_ID}::subscription::SubscriptionCreated`,
   },
   onMessage: (event) => {
-    console.log('New subscription:', {
+    console.log("New subscription:", {
       publicationId: event.parsedJson.publication_id,
       subscriber: event.parsedJson.subscriber,
       tier: event.parsedJson.tier,
@@ -1584,19 +1596,19 @@ async function safeExecute(txb: TransactionBlock) {
     const result = await signAndExecute({ transaction: txb });
 
     // Check effects
-    if (result.effects?.status?.status !== 'success') {
+    if (result.effects?.status?.status !== "success") {
       throw new Error(`Transaction failed: ${result.effects?.status?.error}`);
     }
 
     return result;
   } catch (error: any) {
     // Parse Move errors
-    if (error.message?.includes('EInsufficientPayment')) {
-      throw new Error('Insufficient payment amount');
+    if (error.message?.includes("EInsufficientPayment")) {
+      throw new Error("Insufficient payment amount");
     }
 
-    if (error.message?.includes('EInvalidPublicationId')) {
-      throw new Error('Invalid publication or permission denied');
+    if (error.message?.includes("EInvalidPublicationId")) {
+      throw new Error("Invalid publication or permission denied");
     }
 
     throw error;

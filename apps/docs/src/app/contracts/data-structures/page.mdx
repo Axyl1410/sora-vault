@@ -36,25 +36,27 @@ public struct Publication has key, store {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `UID` | Unique object identifier |
-| `name` | `String` | Publication name (e.g., "Tech Weekly") |
-| `description` | `String` | Publication description |
-| `creator` | `address` | Publication owner's address |
-| `free_tier_enabled` | `bool` | Whether free tier is available |
-| `basic_price` | `u64` | Monthly subscription price in MIST (1 SUI = 1_000_000_000 MIST) |
-| `premium_price` | `u64` | Monthly premium price in MIST |
-| `article_count` | `u64` | Total number of articles published |
+| Field               | Type      | Description                                                     |
+| ------------------- | --------- | --------------------------------------------------------------- |
+| `id`                | `UID`     | Unique object identifier                                        |
+| `name`              | `String`  | Publication name (e.g., "Tech Weekly")                          |
+| `description`       | `String`  | Publication description                                         |
+| `creator`           | `address` | Publication owner's address                                     |
+| `free_tier_enabled` | `bool`    | Whether free tier is available                                  |
+| `basic_price`       | `u64`     | Monthly subscription price in MIST (1 SUI = 1_000_000_000 MIST) |
+| `premium_price`     | `u64`     | Monthly premium price in MIST                                   |
+| `article_count`     | `u64`     | Total number of articles published                              |
 
 **Abilities:**
+
 - `key` - Can be owned or shared
 - `store` - Can be stored in other objects or transferred
 
 **Usage Pattern:**
+
 ```typescript
 // Create publication with 5 SUI basic, 15 SUI premium
-const basicPrice = 5_000_000_000n;  // 5 SUI in MIST
+const basicPrice = 5_000_000_000n; // 5 SUI in MIST
 const premiumPrice = 15_000_000_000n; // 15 SUI in MIST
 ```
 
@@ -71,20 +73,22 @@ public struct PublisherCap has key, store {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `UID` | Unique capability identifier |
-| `publication_id` | `ID` | ID of the publication this cap controls |
+| Field            | Type  | Description                             |
+| ---------------- | ----- | --------------------------------------- |
+| `id`             | `UID` | Unique capability identifier            |
+| `publication_id` | `ID`  | ID of the publication this cap controls |
 
 **Security Model:**
 
 This capability follows the object capability security pattern:
+
 - Only the holder can perform privileged operations
 - Cannot be forged or duplicated
 - Can be transferred or stored
 - Functions verify `publication_id` matches target publication
 
 **Operations Requiring PublisherCap:**
+
 - Publishing articles
 - Updating pricing
 - Toggling free tier
@@ -100,6 +104,7 @@ public struct PUBLICATION has drop {}
 ```
 
 **Usage:**
+
 - Passed to `init()` function at module deployment
 - Used once to claim `Publisher` capability
 - Enables creating Display objects and Transfer Policies
@@ -129,18 +134,18 @@ public struct Article has key, store {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `UID` | Unique article identifier |
-| `publication_id` | `ID` | Parent publication ID |
-| `title` | `String` | Article title (public) |
-| `excerpt` | `String` | Preview text (public, ~200 chars) |
-| `walrus_blob_id` | `String` | Walrus blob ID for encrypted content |
-| `seal_key_id` | `vector<u8>` | Seal encryption key reference |
-| `tier` | `Tier` | Required subscription tier for access |
-| `published_at` | `u64` | Unix timestamp in seconds |
-| `is_archived` | `bool` | Hidden from public listings if true |
-| `image_metadata` | `String` | JSON metadata for images (blob IDs, dimensions, alt text, etc.) |
+| Field            | Type         | Description                                                     |
+| ---------------- | ------------ | --------------------------------------------------------------- |
+| `id`             | `UID`        | Unique article identifier                                       |
+| `publication_id` | `ID`         | Parent publication ID                                           |
+| `title`          | `String`     | Article title (public)                                          |
+| `excerpt`        | `String`     | Preview text (public, ~200 chars)                               |
+| `walrus_blob_id` | `String`     | Walrus blob ID for encrypted content                            |
+| `seal_key_id`    | `vector<u8>` | Seal encryption key reference                                   |
+| `tier`           | `Tier`       | Required subscription tier for access                           |
+| `published_at`   | `u64`        | Unix timestamp in seconds                                       |
+| `is_archived`    | `bool`       | Hidden from public listings if true                             |
+| `image_metadata` | `String`     | JSON metadata for images (blob IDs, dimensions, alt text, etc.) |
 
 **Content Flow:**
 
@@ -166,6 +171,7 @@ public struct Article has key, store {
 ```
 
 **Why Separate Metadata?**
+
 - On-chain: Small metadata (title, excerpt, tier)
 - Off-chain (Walrus): Large encrypted content
 - Reduces on-chain storage costs
@@ -173,12 +179,14 @@ public struct Article has key, store {
 
 **Immutable Fields:**
 Once published, these cannot be changed:
+
 - `walrus_blob_id`
 - `seal_key_id`
 - `tier`
 - `published_at`
 
 **Mutable Fields:**
+
 - `title` - Can update via `update_article()`
 - `excerpt` - Can update via `update_article()`
 - `image_metadata` - Can update via `update_article()`
@@ -210,6 +218,7 @@ The `image_metadata` field stores JSON-formatted metadata for article images:
 ```
 
 **Image Storage:**
+
 - Images are uploaded to Walrus as separate blobs
 - Each image blob ID is stored in the metadata
 - Images can be encrypted with Seal (same key as article content)
@@ -233,13 +242,14 @@ public enum Tier has copy, drop, store {
 
 **Variants:**
 
-| Variant | Value (u8) | Price | Access |
-|---------|------------|-------|--------|
-| `Free` | 0 | 0 SUI | Free-tier articles only |
-| `Basic` | 1 | ~5 SUI/month | Free + Basic articles |
-| `Premium` | 2 | ~15 SUI/month | All articles |
+| Variant   | Value (u8) | Price         | Access                  |
+| --------- | ---------- | ------------- | ----------------------- |
+| `Free`    | 0          | 0 SUI         | Free-tier articles only |
+| `Basic`   | 1          | ~5 SUI/month  | Free + Basic articles   |
+| `Premium` | 2          | ~15 SUI/month | All articles            |
 
 **Abilities:**
+
 - `copy` - Can be copied
 - `drop` - Can be implicitly destroyed
 - `store` - Can be stored in structs
@@ -257,6 +267,7 @@ Premium (2)
 Access is hierarchical: Premium can read Basic and Free content.
 
 **Constructor Functions:**
+
 ```typescript
 // In TypeScript SDK
 const free = subscription::create_tier_free();
@@ -281,14 +292,14 @@ public struct SubscriptionNFT has key, store {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `UID` | Unique subscription NFT ID |
-| `publication_id` | `ID` | Publication being subscribed to |
-| `tier` | `Tier` | Subscription level (Free/Basic/Premium) |
-| `subscribed_at` | `u64` | Unix timestamp when subscribed (seconds) |
-| `expires_at` | `u64` | Unix timestamp when subscription expires |
-| `subscriber` | `address` | Original subscriber (for analytics) |
+| Field            | Type      | Description                              |
+| ---------------- | --------- | ---------------------------------------- |
+| `id`             | `UID`     | Unique subscription NFT ID               |
+| `publication_id` | `ID`      | Publication being subscribed to          |
+| `tier`           | `Tier`    | Subscription level (Free/Basic/Premium)  |
+| `subscribed_at`  | `u64`     | Unix timestamp when subscribed (seconds) |
+| `expires_at`     | `u64`     | Unix timestamp when subscription expires |
+| `subscriber`     | `address` | Original subscriber (for analytics)      |
 
 **Time Calculations:**
 
@@ -322,6 +333,7 @@ Subscribe → Active → Expire → Renew
 **Kiosk Integration:**
 
 SubscriptionNFTs can be:
+
 - Placed in personal Kiosk
 - Listed for sale at custom price
 - Traded on secondary market
@@ -330,6 +342,7 @@ SubscriptionNFTs can be:
 **Tradability:**
 
 The subscription can be sold even if:
+
 - Time remaining on subscription
 - Buyer continues with same tier and expiry
 - Creator earns royalty (10-15%)
@@ -358,18 +371,19 @@ public struct Comment has key, store {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `UID` | Unique comment identifier |
-| `article_id` | `ID` | Article this comment belongs to |
-| `author` | `address` | Comment author's address |
+| Field               | Type         | Description                                               |
+| ------------------- | ------------ | --------------------------------------------------------- |
+| `id`                | `UID`        | Unique comment identifier                                 |
+| `article_id`        | `ID`         | Article this comment belongs to                           |
+| `author`            | `address`    | Comment author's address                                  |
 | `parent_comment_id` | `Option<ID>` | Parent comment ID for nested replies (None for top-level) |
-| `content` | `String` | Comment text content |
-| `created_at` | `u64` | Creation timestamp (seconds) |
-| `updated_at` | `u64` | Last update timestamp (seconds) |
-| `is_deleted` | `bool` | Soft delete flag (true if deleted) |
+| `content`           | `String`     | Comment text content                                      |
+| `created_at`        | `u64`        | Creation timestamp (seconds)                              |
+| `updated_at`        | `u64`        | Last update timestamp (seconds)                           |
+| `is_deleted`        | `bool`       | Soft delete flag (true if deleted)                        |
 
 **Abilities:**
+
 - `key` - Can be owned or shared
 - `store` - Can be stored in other objects or transferred
 
@@ -388,6 +402,7 @@ Article
 **Access Control:**
 
 Comments require:
+
 - Valid subscription to article's publication
 - Subscription tier ≥ article tier
 - Subscription not expired
@@ -395,6 +410,7 @@ Comments require:
 **Soft Delete:**
 
 When a comment is deleted:
+
 - `is_deleted` is set to `true`
 - Content is preserved (for audit trail)
 - Comment is hidden from UI
@@ -403,6 +419,7 @@ When a comment is deleted:
 **Storage Model:**
 
 Comments are stored as shared objects to enable:
+
 - Efficient querying by article_id
 - Off-chain indexing and aggregation
 - Real-time comment feeds
@@ -427,17 +444,17 @@ const thread = buildCommentThread(comments);
 
 **Size Estimate:**
 
-| Field | Approximate Size |
-|-------|-----------------|
-| `id` | 32 bytes |
-| `article_id` | 32 bytes |
-| `author` | 32 bytes |
-| `parent_comment_id` | 33 bytes (Option) |
-| `content` | Variable (typically 50-500 bytes) |
-| `created_at` | 8 bytes |
-| `updated_at` | 8 bytes |
-| `is_deleted` | 1 byte |
-| **Total** | ~200-700 bytes per comment |
+| Field               | Approximate Size                  |
+| ------------------- | --------------------------------- |
+| `id`                | 32 bytes                          |
+| `article_id`        | 32 bytes                          |
+| `author`            | 32 bytes                          |
+| `parent_comment_id` | 33 bytes (Option)                 |
+| `content`           | Variable (typically 50-500 bytes) |
+| `created_at`        | 8 bytes                           |
+| `updated_at`        | 8 bytes                           |
+| `is_deleted`        | 1 byte                            |
+| **Total**           | ~200-700 bytes per comment        |
 
 ---
 
@@ -459,13 +476,13 @@ public struct ReadToken has key, store {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `UID` | Unique token identifier |
-| `article_id` | `ID` | Specific article this token unlocks |
-| `reader` | `address` | Address of reader (for analytics) |
-| `created_at` | `u64` | Unix timestamp when token created |
-| `expires_at` | `u64` | Unix timestamp when token expires |
+| Field        | Type      | Description                         |
+| ------------ | --------- | ----------------------------------- |
+| `id`         | `UID`     | Unique token identifier             |
+| `article_id` | `ID`      | Specific article this token unlocks |
+| `reader`     | `address` | Address of reader (for analytics)   |
+| `created_at` | `u64`     | Unix timestamp when token created   |
+| `expires_at` | `u64`     | Unix timestamp when token expires   |
 
 **Duration:**
 
@@ -490,6 +507,7 @@ else: // Premium
 **Use Case:**
 
 Reader wants to read a single article without subscribing:
+
 1. Pay daily rate (~0.167 SUI for Basic)
 2. Receive ReadToken valid 24 hours
 3. Can read that article unlimited times in 24h
@@ -497,13 +515,13 @@ Reader wants to read a single article without subscribing:
 
 **vs Subscription:**
 
-| Feature | ReadToken | Subscription |
-|---------|-----------|--------------|
-| Duration | 24 hours | 30 days |
-| Access | Single article | All tier articles |
-| Price | ~1/30 of monthly | Full monthly price |
-| Tradable | No | Yes (via Kiosk) |
-| Renewable | No | Yes |
+| Feature   | ReadToken        | Subscription       |
+| --------- | ---------------- | ------------------ |
+| Duration  | 24 hours         | 30 days            |
+| Access    | Single article   | All tier articles  |
+| Price     | ~1/30 of monthly | Full monthly price |
+| Tradable  | No               | Yes (via Kiosk)    |
+| Renewable | No               | Yes                |
 
 ---
 
@@ -518,11 +536,13 @@ public struct Rule has drop {}
 ```
 
 **Purpose:**
+
 - Authorizes adding/removing rules from policies
 - Used with `TransferPolicy<SubscriptionNFT>`
 - Ensures only this module can modify its rules
 
 **Abilities:**
+
 - `drop` - Can be discarded after use
 
 ### `Config`
@@ -538,10 +558,10 @@ public struct Config has store, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `amount_bp` | `u16` | Royalty percentage in basis points (10000 = 100%) |
-| `min_amount` | `u64` | Minimum royalty amount in MIST |
+| Field        | Type  | Description                                       |
+| ------------ | ----- | ------------------------------------------------- |
+| `amount_bp`  | `u16` | Royalty percentage in basis points (10000 = 100%) |
+| `min_amount` | `u64` | Minimum royalty amount in MIST                    |
 
 **Basis Points (BPS):**
 
@@ -554,11 +574,11 @@ public struct Config has store, drop {
 
 **Examples:**
 
-| BPS | Percentage | On 10 SUI Sale |
-|-----|------------|----------------|
-| 500 | 5% | 0.5 SUI |
-| 1000 | 10% | 1 SUI |
-| 1500 | 15% | 1.5 SUI |
+| BPS  | Percentage | On 10 SUI Sale |
+| ---- | ---------- | -------------- |
+| 500  | 5%         | 0.5 SUI        |
+| 1000 | 10%        | 1 SUI          |
+| 1500 | 15%        | 1.5 SUI        |
 
 **Calculation:**
 
@@ -600,13 +620,14 @@ public struct SubscriberCounts has store, copy, drop {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `free` | `u64` | Number of free-tier subscribers |
-| `basic` | `u64` | Number of basic-tier subscribers |
+| Field     | Type  | Description                        |
+| --------- | ----- | ---------------------------------- |
+| `free`    | `u64` | Number of free-tier subscribers    |
+| `basic`   | `u64` | Number of basic-tier subscribers   |
 | `premium` | `u64` | Number of premium-tier subscribers |
 
 **Abilities:**
+
 - `store` - Can be stored in PublicationStats
 - `copy` - Can be copied when returned
 - `drop` - Can be implicitly destroyed
@@ -633,17 +654,18 @@ public struct PublicationStats has key, store {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `UID` | Unique stats object ID |
-| `publication_id` | `ID` | Publication being tracked |
-| `subscriber_counts` | `SubscriberCounts` | Breakdown by tier |
-| `total_revenue` | `u64` | Cumulative earnings in MIST |
-| `article_views` | `VecMap<ID, u64>` | Map of article_id → view count |
+| Field               | Type               | Description                    |
+| ------------------- | ------------------ | ------------------------------ |
+| `id`                | `UID`              | Unique stats object ID         |
+| `publication_id`    | `ID`               | Publication being tracked      |
+| `subscriber_counts` | `SubscriberCounts` | Breakdown by tier              |
+| `total_revenue`     | `u64`              | Cumulative earnings in MIST    |
+| `article_views`     | `VecMap<ID, u64>`  | Map of article_id → view count |
 
 **Privacy Model:**
 
 All functions require `PublisherCap` to access:
+
 ```move
 public fun get_stats(
     stats: &PublicationStats,
@@ -652,6 +674,7 @@ public fun get_stats(
 ```
 
 Only the publication creator can view:
+
 - Subscriber counts
 - Revenue totals
 - Article views
@@ -673,7 +696,7 @@ total_revenue += article_price
 
 ```typescript
 // Each time article is accessed
-article_views[article_id] += 1
+article_views[article_id] += 1;
 
 // Query views
 const views = get_article_views(stats, publisher_cap, article_id);
@@ -747,24 +770,24 @@ PublisherCap
 
 ### On-Chain Storage
 
-| Struct | Approximate Size | Storage Cost |
-|--------|-----------------|--------------|
-| `Publication` | ~200 bytes | ~0.0002 SUI |
-| `Article` | ~300 bytes | ~0.0003 SUI |
-| `SubscriptionNFT` | ~150 bytes | ~0.00015 SUI |
-| `PublisherCap` | ~50 bytes | ~0.00005 SUI |
-| `ReadToken` | ~100 bytes | ~0.0001 SUI |
-| `PublicationStats` | ~500+ bytes | ~0.0005+ SUI |
+| Struct             | Approximate Size | Storage Cost |
+| ------------------ | ---------------- | ------------ |
+| `Publication`      | ~200 bytes       | ~0.0002 SUI  |
+| `Article`          | ~300 bytes       | ~0.0003 SUI  |
+| `SubscriptionNFT`  | ~150 bytes       | ~0.00015 SUI |
+| `PublisherCap`     | ~50 bytes        | ~0.00005 SUI |
+| `ReadToken`        | ~100 bytes       | ~0.0001 SUI  |
+| `PublicationStats` | ~500+ bytes      | ~0.0005+ SUI |
 
 **Note:** Actual costs depend on content length (strings, vectors) and network fees.
 
 ### Off-Chain Storage (Walrus)
 
-| Content Type | Size | Storage Cost |
-|-------------|------|--------------|
-| Short article | ~10 KB | Varies |
-| Medium article | ~50 KB | Varies |
-| Long article with images | ~500 KB | Varies |
+| Content Type             | Size    | Storage Cost |
+| ------------------------ | ------- | ------------ |
+| Short article            | ~10 KB  | Varies       |
+| Medium article           | ~50 KB  | Varies       |
+| Long article with images | ~500 KB | Varies       |
 
 ---
 
@@ -787,27 +810,30 @@ public struct Treasury has key {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `UID` | Unique treasury identifier |
-| `balance` | `Balance<SUI>` | Treasury balance holding collected funds |
-| `subscription_fee_bps` | `u64` | Subscription fee rate in basis points (default: 100 = 1%) |
-| `article_deposit_bps` | `u64` | Article deposit rate in basis points (default: 100 = 1%) |
-| `total_fees_collected` | `u64` | Cumulative subscription/pay-per-article fees in MIST |
-| `total_deposits_collected` | `u64` | Cumulative article deposits in MIST |
+| Field                      | Type           | Description                                               |
+| -------------------------- | -------------- | --------------------------------------------------------- |
+| `id`                       | `UID`          | Unique treasury identifier                                |
+| `balance`                  | `Balance<SUI>` | Treasury balance holding collected funds                  |
+| `subscription_fee_bps`     | `u64`          | Subscription fee rate in basis points (default: 100 = 1%) |
+| `article_deposit_bps`      | `u64`          | Article deposit rate in basis points (default: 100 = 1%)  |
+| `total_fees_collected`     | `u64`          | Cumulative subscription/pay-per-article fees in MIST      |
+| `total_deposits_collected` | `u64`          | Cumulative article deposits in MIST                       |
 
 **Abilities:**
+
 - `key` - Can be shared globally
 
 **Sharing Model:**
 
 Treasury is a shared object accessible by all users:
+
 ```move
 // Created in init()
 transfer::share_object(treasury);
 ```
 
 **Why Shared?**
+
 - Multiple users need simultaneous access
 - Fee collection happens during subscriptions
 - No contention for reads (only writes need synchronization)
@@ -850,11 +876,11 @@ fee = amount * fee_bps / 10000
 
 **Example Calculations:**
 
-| Amount | Fee Rate | Calculation | Result |
-|--------|----------|-------------|--------|
-| 5 SUI | 100 BPS (1%) | 5 * 100 / 10000 | 0.05 SUI |
-| 15 SUI | 200 BPS (2%) | 15 * 200 / 10000 | 0.3 SUI |
-| 0.5 SUI | 100 BPS (1%) | 0.5 * 100 / 10000 | 0.005 SUI |
+| Amount  | Fee Rate     | Calculation        | Result    |
+| ------- | ------------ | ------------------ | --------- |
+| 5 SUI   | 100 BPS (1%) | 5 \* 100 / 10000   | 0.05 SUI  |
+| 15 SUI  | 200 BPS (2%) | 15 \* 200 / 10000  | 0.3 SUI   |
+| 0.5 SUI | 100 BPS (1%) | 0.5 \* 100 / 10000 | 0.005 SUI |
 
 **Security Considerations:**
 
@@ -875,17 +901,19 @@ public struct TreasuryCap has key, store {
 
 **Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `UID` | Unique capability identifier |
+| Field | Type  | Description                  |
+| ----- | ----- | ---------------------------- |
+| `id`  | `UID` | Unique capability identifier |
 
 **Abilities:**
+
 - `key` - Can be owned/transferred
 - `store` - Can be stored in other objects
 
 **Security Model:**
 
 The TreasuryCap follows the capability pattern:
+
 - Created once during module initialization
 - Transferred to deployer
 - Required for all admin operations
@@ -921,6 +949,7 @@ multi_sig::add_capability(multi_sig_wallet, treasury_cap);
 **Emergency Response:**
 
 If admin key is compromised:
+
 1. Cannot mint new TreasuryCap (unforgeable)
 2. Can only withdraw existing balance
 3. Cannot modify fee rates beyond 10% max
@@ -945,18 +974,21 @@ Use for withdrawals and fee updates
 ### Why Enum for Tier?
 
 **Pros:**
+
 - Type-safe tier values
 - Clear intent in code
 - Efficient comparison
 - Future-proof (can add tiers)
 
 **Cons:**
+
 - Slightly more verbose than u8
 - Requires helper functions
 
 ### Why Separate PublisherCap?
 
 **Capability Pattern Benefits:**
+
 - Clear ownership model
 - Transferable independently
 - Can be delegated to managers
@@ -966,6 +998,7 @@ Use for withdrawals and fee updates
 ### Why Store Walrus Blob ID?
 
 **vs Storing Content On-Chain:**
+
 - Cost: 1 KB on-chain ≈ 500 KB on Walrus
 - Speed: Parallel Walrus retrieval
 - Privacy: Encrypted off-chain
@@ -974,6 +1007,7 @@ Use for withdrawals and fee updates
 ### Why VecMap for Article Views?
 
 **vs Table:**
+
 - Simpler API
 - Suitable for moderate article counts
 - Ordered traversal possible

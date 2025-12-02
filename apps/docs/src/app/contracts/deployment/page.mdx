@@ -98,6 +98,7 @@ sui move test --coverage
 ```
 
 **Expected Output:**
+
 ```
 Running Move unit tests
 [ PASS    ] private_publishing::publication_tests::test_create_publication
@@ -267,28 +268,15 @@ echo "MAINNET_PUBLISHER_ID=<publisher_id>" >> .env.mainnet
 
 ### 3. Initialize Platform
 
-```bash
+````bash
 # Create Transfer Policy for SubscriptionNFT
 sui client call \
-  --package $MAINNET_PACKAGE_ID \
+  --package "$PACKAGE_ID" \
   --module marketplace_policies \
-  --function create_transfer_policy \
-  --args $MAINNET_PUBLISHER_ID \
-  --gas-budget 10000000
-
-# Add royalty rule (10% default)
-sui client call \
-  --package $MAINNET_PACKAGE_ID \
-  --module marketplace_policies \
-  --function add_royalty_rule \
-  --args \
-    <policy_id> \
-    <policy_cap_id> \
-    1000 \
-    100000000 \
-  --gas-budget 10000000
-```
-
+  --function create_transfer_policy_with_royalty \
+  --args "$PUBLISHER_ID" "1000" "0" \
+  --gas-budget 100000000 \
+  --json > transfer_policy_output.json
 ---
 
 ## Upgrade Strategy
@@ -309,7 +297,7 @@ fun init(otw: PUBLICATION, ctx: &mut TxContext) {
     transfer::public_transfer(upgrade_cap, ctx.sender());
     transfer::public_transfer(publisher, ctx.sender());
 }
-```
+````
 
 ### 2. Publishing Upgrade
 
@@ -357,6 +345,7 @@ private_publishing = "0x0"  # Will be replaced during publishing
 Create `.env` files for each environment:
 
 **`.env.local`**
+
 ```bash
 VITE_NETWORK=localnet
 VITE_PACKAGE_ID=0x...
@@ -364,6 +353,7 @@ VITE_PUBLISHER_ID=0x...
 ```
 
 **`.env.testnet`**
+
 ```bash
 VITE_NETWORK=testnet
 VITE_PACKAGE_ID=0x...
@@ -371,6 +361,7 @@ VITE_PUBLISHER_ID=0x...
 ```
 
 **`.env.mainnet`**
+
 ```bash
 VITE_NETWORK=mainnet
 VITE_PACKAGE_ID=0x...
@@ -398,6 +389,7 @@ sui client call --dry-run \
 ### Optimization Tips
 
 **1. Minimize Storage:**
+
 ```move
 // Bad: Large strings on-chain
 public struct Article {
@@ -411,15 +403,17 @@ public struct Article {
 ```
 
 **2. Batch Operations:**
+
 ```typescript
 // Good: Single transaction for multiple operations
 const txb = new TransactionBuilder();
-txb.moveCall({ target: "..." });  // Create publication
-txb.moveCall({ target: "..." });  // Create stats
-txb.moveCall({ target: "..." });  // Create policy
+txb.moveCall({ target: "..." }); // Create publication
+txb.moveCall({ target: "..." }); // Create stats
+txb.moveCall({ target: "..." }); // Create policy
 ```
 
 **3. Use Shared Objects Wisely:**
+
 - Shared objects cost more to access
 - Use owned objects when possible
 - Consider freezing objects that don't change
@@ -445,17 +439,17 @@ sui client dynamic-field <parent_object_id>
 
 ```typescript
 // Subscribe to events
-const provider = new SuiClient({ url: getFullnodeUrl('testnet') });
+const provider = new SuiClient({ url: getFullnodeUrl("testnet") });
 
 provider.subscribeEvent({
   filter: {
     MoveEventModule: {
       package: PACKAGE_ID,
-      module: 'publication',
+      module: "publication",
     },
   },
   onMessage: (event) => {
-    console.log('Event:', event);
+    console.log("Event:", event);
   },
 });
 ```
@@ -467,7 +461,7 @@ provider.subscribeEvent({
 try {
   await signAndExecuteTransaction({ transaction: txb });
 } catch (error) {
-  console.error('Transaction failed:', {
+  console.error("Transaction failed:", {
     digest: error.digest,
     effects: error.effects,
     errors: error.errors,
@@ -482,12 +476,14 @@ try {
 ### Common Deployment Errors
 
 **"Insufficient gas"**
+
 ```bash
 # Solution: Increase gas budget
 sui client publish --gas-budget 1000000000
 ```
 
 **"Package not found"**
+
 ```bash
 # Solution: Ensure dependencies are correct
 [dependencies]
@@ -495,6 +491,7 @@ Sui = { git = "...", rev = "framework/testnet" }
 ```
 
 **"Address resolution failed"**
+
 ```bash
 # Solution: Check Move.toml addresses section
 [addresses]
@@ -502,6 +499,7 @@ private_publishing = "0x0"
 ```
 
 **"Object not found"**
+
 ```bash
 # Solution: Object may not be owned or doesn't exist
 sui client object <object_id>
@@ -562,6 +560,7 @@ After successful deployment:
 4. **Documentation** - Update user-facing docs with contract addresses
 
 See also:
+
 - [Integration Guide](/contracts/integration) - Connect frontend to contracts
 - [Testing Guide](/contracts/testing) - Comprehensive testing strategies
 - [Security Guide](/contracts/security) - Security best practices

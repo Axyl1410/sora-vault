@@ -8,6 +8,7 @@ module private_publishing::seal_policy {
     use private_publishing::article::{Self, Article};
     use private_publishing::subscription::SubscriptionNFT;
     use private_publishing::access_control::{Self, ReadToken};
+    use private_publishing::publication::{Self, Publication, PublisherCap};
 
     // Error codes
     const EAccessDenied: u64 = 1;
@@ -66,5 +67,35 @@ module private_publishing::seal_policy {
         );
 
         assert!(has_access, EAccessDenied);
+    }
+
+    /// Seal policy: Approve decryption for publication owner/creator
+    ///
+    /// Called by Seal key servers during decryption to verify owner access.
+    /// The `id` parameter is the Seal encryption ID from the encrypted object.
+    /// The `publisher_cap` parameter proves ownership of the publication.
+    ///
+    /// This function aborts if access is denied, which prevents key release.
+    entry fun seal_approve_owner(
+        id: vector<u8>,
+        publisher_cap: &PublisherCap,
+        article: &Article,
+        publication: &Publication,
+    ) {
+        // Verify the Seal encryption ID matches the article's stored seal_key_id
+        let seal_key_id = article::seal_key_id(article);
+        assert!(id == seal_key_id, EAccessDenied);
+
+        // Verify publisher_cap is for the correct publication
+        assert!(
+            publication::publisher_cap_publication_id(publisher_cap) == publication::id(publication),
+            EAccessDenied
+        );
+
+        // Verify article belongs to this publication
+        assert!(
+            article::publication_id(article) == publication::id(publication),
+            EAccessDenied
+        );
     }
 }
