@@ -310,10 +310,10 @@ module private_publishing::seal_policy_tests {
         let article1_id;
         test_scenario::next_tx(&mut scenario, creator);
         {
-            let article2 = test_scenario::take_shared(&scenario);
+            let article2 = test_scenario::take_shared<article::Article>(&scenario);
             test_scenario::return_shared(article2);
 
-            let article1 = test_scenario::take_shared(&scenario);
+            let article1 = test_scenario::take_shared<article::Article>(&scenario);
             article1_id = article::id(&article1);
             test_scenario::return_shared(article1);
         };
