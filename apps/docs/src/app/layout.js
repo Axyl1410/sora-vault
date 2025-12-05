@@ -1,9 +1,7 @@
-import { Banner, Head } from "nextra/components";
+import { Head } from "nextra/components";
 import { getPageMap } from "nextra/page-map";
-import { Footer, Layout, Navbar } from "nextra-theme-docs";
+import { Layout, Navbar } from "nextra-theme-docs";
 import "nextra-theme-docs/style.css";
-import Image from "next/image";
-import { useThemeConfig } from "nextra-theme-docs";
 import "./globals.css";
 
 export const metadata = {
@@ -17,13 +15,13 @@ const navbar = (
 		logo={
 			<div className="h-full">
 				<p className="sr-only">Axyl</p>
+				{/** biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 3207 485"
 					fill="currentColor"
-					height={12}
+					height={14}
 				>
-					<title>blacktext</title>
 					<line
 						x1="362.28"
 						y1="151"

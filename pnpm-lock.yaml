@@ -240,6 +240,9 @@ importers:
       '@vitest/ui':
         specifier: ^4.0.3
         version: 4.0.14(vitest@4.0.14)
+      '@workspace/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       eslint:
         specifier: ^9.17.0
         version: 9.32.0(jiti@2.6.1)
